@@ -1,0 +1,33 @@
+{
+    "manifest_version": 3,
+
+    "name": "CDID",
+    "description": "Verifica las tareas de campus medusa.",
+    "version": "1.0",
+    "icons": {
+        "16": "icon.png",
+        "32": "icon.png",
+        "48": "icon.png",
+        "128": "icon.png"
+    },
+    "permissions": ["scripting", "storage", "tabs", "activeTab"],
+    "host_permissions": ["https://www3.gobiernodecanarias.org/medusa/eforma/campus/*"],
+    "content_scripts": [
+        {
+            "matches": ["https://www3.gobiernodecanarias.org/medusa/eforma/campus/mod/assign/view.php*"],
+            "js": ["src/js/cdid_assignment.js"],
+            "run_at": "document_end"
+        },
+        {
+            "matches": ["https://www3.gobiernodecanarias.org/medusa/eforma/campus/course/view.php*"],
+            "js": ["src/js/cdid_course.js"],
+            "run_at": "document_end"
+        },
+        {
+            "matches": ["https://www3.gobiernodecanarias.org/medusa/eforma/campus/calendar/view.php*"],
+            "js": ["src/js/cdid_calendar.js"],
+            "run_at": "document_end"
+        }
+
+    ]
+}
