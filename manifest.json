@@ -27,7 +27,12 @@
             "matches": ["https://www3.gobiernodecanarias.org/medusa/eforma/campus/calendar/view.php*"],
             "js": ["src/js/cdid_calendar.js"],
             "run_at": "document_end"
+        },
+        {
+            "matches": ["https://www3.gobiernodecanarias.org/medusa/eforma/campus/mod/assign/view.php?id=*&action=editsubmission"],
+            "js": ["src/js/cdid_editsubmission.js"],
+            "css": ["src/css/cdid_editsubmission.css"],
+            "run_at": "document_end"
         }
-
     ]
 }
