@@ -1,0 +1,12 @@
+.cdid-checkbox {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    transform: translate(0, -50%);
+    opacity: 0;
+    transition: all 150ms;
+}
+
+li:not(.modtype_assign) > div.activity-item:hover .cdid-checkbox {
+    opacity: 1;
+}
