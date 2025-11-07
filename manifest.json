@@ -25,6 +25,12 @@
             "run_at": "document_end"
         },
         {
+            "matches": ["https://www3.gobiernodecanarias.org/medusa/eforma/campus/course/section.php*"],
+            "js": ["src/js/cdid_course.js"],
+            "css": ["src/css/cdid_course.css"],
+            "run_at": "document_end"
+        },
+        {
             "matches": ["https://www3.gobiernodecanarias.org/medusa/eforma/campus/calendar/view.php*"],
             "js": ["src/js/cdid_calendar.js"],
             "run_at": "document_end"
