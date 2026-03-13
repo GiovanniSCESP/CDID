@@ -32,7 +32,7 @@ Cuando abres una tarea, se guarda su id y si está entregada o no. Luego, en cur
 	- Edge: edge://extensions
 4. Activa Modo de desarrollador.
 5. Pulsa Cargar descomprimida.
-6. Selecciona la carpeta CDID-Modificado.
+6. Selecciona la carpeta CDID.
 
 ## Uso
 
