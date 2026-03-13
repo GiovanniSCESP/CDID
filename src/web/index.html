@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spline Scene</title>
+</head>
+<style>
+    :root {
+        --bg-1: #0b1f2a;
+        --bg-2: #163a4d;
+        --glow: rgba(111, 212, 255, 0.35);
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background:
+            radial-gradient(circle at 20% 20%, var(--glow), transparent 35%),
+            linear-gradient(135deg, var(--bg-1), var(--bg-2));
+    }
+
+    body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+            repeating-linear-gradient(
+                0deg,
+                rgba(255, 255, 255, 0.02) 0,
+                rgba(255, 255, 255, 0.02) 1px,
+                transparent 1px,
+                transparent 3px
+            );
+        mix-blend-mode: soft-light;
+    }
+
+    spline-viewer {
+        display: block;
+        width: 50%;
+        height: 50%;
+        min-height: 100vh;
+    }
+
+    /* Force-hide Spline branding link, even if it is injected with inline display:flex */
+    spline-viewer #logo,
+    spline-viewer a#logo,
+    spline-viewer a[href*="spline.design/?utm_source=spline-viewer"],
+    #logo[href*="spline.design/?utm_source=spline-viewer"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+
+    @supports not (height: 100dvh) {
+        spline-viewer {
+            height: 100vh;
+        }
+    }
+
+    @media (max-width: 768px) {
+        body {
+            background:
+                radial-gradient(circle at 50% 15%, var(--glow), transparent 45%),
+                linear-gradient(160deg, var(--bg-1), var(--bg-2));
+        }
+    }
+</style>
+<body>
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.12.68/build/spline-viewer.js"></script>
+    <spline-viewer url="https://prod.spline.design/epLhY9bd0WLjglGC/scene.splinecode"></spline-viewer>
+    <script>
+        const viewer = document.querySelector("spline-viewer");
+        const logoSelector = [
+            "#logo[href*='spline.design/?utm_source=spline-viewer']",
+            "a#logo",
+            "a[href*='spline.design/?utm_source=spline-viewer']"
+        ].join(",");
+
+        function hideInRoot(root) {
+            if (!root || !root.querySelectorAll) return;
+            root.querySelectorAll(logoSelector).forEach((el) => {
+                el.style.setProperty("display", "none", "important");
+                el.style.setProperty("visibility", "hidden", "important");
+                el.style.setProperty("opacity", "0", "important");
+                el.style.setProperty("pointer-events", "none", "important");
+                el.remove();
+            });
+        }
+
+        function enforceHideLogo() {
+            hideInRoot(document);
+            if (!viewer) return;
+            hideInRoot(viewer);
+            hideInRoot(viewer.shadowRoot);
+        }
+
+        enforceHideLogo();
+
+        const bodyObserver = new MutationObserver(enforceHideLogo);
+        bodyObserver.observe(document.body, { childList: true, subtree: true });
+
+        if (viewer) {
+            const viewerObserver = new MutationObserver(enforceHideLogo);
+            viewerObserver.observe(viewer, { childList: true, subtree: true });
+        }
+
+        window.setInterval(enforceHideLogo, 500);
+    </script>
+</body>
+
+</html>

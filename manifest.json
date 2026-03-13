@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
 
-    "name": "CDID",
+    "name": "CDIDv2",
     "description": "Verifica las tareas de campus medusa.",
     "version": "1.0",
     "icons": {
@@ -9,6 +9,12 @@
         "32": "icon.png",
         "48": "icon.png",
         "128": "icon.png"
+    },
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "cdidv2@local",
+            "strict_min_version": "109.0"
+        }
     },
     "permissions": ["scripting", "storage", "tabs", "activeTab"],
     "host_permissions": ["https://www3.gobiernodecanarias.org/medusa/eforma/campus/*"],
@@ -21,13 +27,6 @@
         {
             "matches": ["https://www3.gobiernodecanarias.org/medusa/eforma/campus/course/view.php*"],
             "js": ["src/js/cdid_course.js"],
-            "css": ["src/css/cdid_course.css"],
-            "run_at": "document_end"
-        },
-        {
-            "matches": ["https://www3.gobiernodecanarias.org/medusa/eforma/campus/course/section.php*"],
-            "js": ["src/js/cdid_course.js"],
-            "css": ["src/css/cdid_course.css"],
             "run_at": "document_end"
         },
         {
@@ -35,11 +34,12 @@
             "js": ["src/js/cdid_calendar.js"],
             "run_at": "document_end"
         },
+        
         {
-            "matches": ["https://www3.gobiernodecanarias.org/medusa/eforma/campus/mod/assign/view.php?id=*&action=editsubmission"],
-            "js": ["src/js/cdid_editsubmission.js"],
-            "css": ["src/css/cdid_editsubmission.css"],
+            "matches": ["https://www3.gobiernodecanarias.org/medusa/eforma/campus/course/section.php*"],
+            "js": ["src/js/cdid_course.js"],
             "run_at": "document_end"
         }
+
     ]
 }

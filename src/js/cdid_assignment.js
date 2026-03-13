@@ -1,6 +1,8 @@
+const extensionApi = globalThis.browser ?? globalThis.chrome;
+
 const readLocalStorage = async (key) => {
     return new Promise((resolve, reject) => {
-        chrome.storage.local.get([key], function (result) {
+        extensionApi.storage.local.get([key], function (result) {
         if (result[key] === undefined) {
             reject();
         } else {
@@ -14,9 +16,9 @@ const readLocalStorage = async (key) => {
 async function main() {
     console.log('Se ejecuta main');
 
-    chrome.storage.local.get(['assignments']).then((result) => {
+    extensionApi.storage.local.get(['assignments']).then((result) => {
         if ( !result.assignments ) {
-            chrome.storage.local.set({ 'assignments': [] });
+            extensionApi.storage.local.set({ 'assignments': [] });
         }
     });
     
@@ -51,7 +53,7 @@ async function main() {
         'status': submissionStatus
     });
     
-    chrome.storage.local.set({ 'assignments': assignments })
+    extensionApi.storage.local.set({ 'assignments': assignments })
 
     childText = document.createTextNode(' (CDID)');
     if ( submittedStatusElement ) {submittedStatusElement.appendChild(childText);}

@@ -1,6 +1,8 @@
+const extensionApi = globalThis.browser ?? globalThis.chrome;
+
 const readLocalStorage = async (key) => {
     return new Promise((resolve, reject) => {
-        chrome.storage.local.get([key], function (result) {
+        extensionApi.storage.local.get([key], function (result) {
         if (result[key] === undefined) {
             reject(new Error(`Missing key in local storage: ${key}`));
         } else {
@@ -32,6 +34,27 @@ function findActivities() {
     return activities;
 }
 
+function parseAssignmentIdFromUrl(url) {
+    const parsed = new URL(url, window.location.origin);
+    return parsed.searchParams.get('id');
+}
+
+async function getSubmissionStatusFromAssignmentPage(url) {
+    const response = await fetch(url, { credentials: 'include' });
+    if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+    }
+
+    const html = await response.text();
+    return html.includes('submissionstatussubmitted') ? 1 : 0;
+}
+
+function mergeAssignment(assignments, id, status) {
+    const filtered = assignments.filter((assignment) => assignment.id !== id);
+    filtered.push({ id, status });
+    return filtered;
+}
+
 // Función para crear y agregar el botón de control
 function createActivitiesButton() {
     const leftColumn = document.querySelector('div.columnleft.blockcolumn');
@@ -60,11 +83,6 @@ function createActivitiesButton() {
     button.onmouseover = () => button.style.background = '#2559a3';
     button.onmouseout = () => button.style.background = '#3478b0';
     
-    // Estado para controlar la navegación
-    let activityTabs = [];
-    let currentActivityIndex = 0;
-    let isNavigating = false;
-    
     // Click en botón principal
     button.onclick = async () => {
         const activities = findActivities();
@@ -74,32 +92,48 @@ function createActivitiesButton() {
             return;
         }
         
-        currentActivityIndex = 0;
-        isNavigating = true;
         button.disabled = true;
         button.style.opacity = '0.5';
         button.textContent = `▶ Procesando...`;
-        
-        // Procesar cada actividad
-        for (let i = 0; i < activities.length; i++) {
-            const activity = activities[i];
-            button.textContent = `▶ Procesando ${i + 1}/${activities.length}`;
-            
-            // Abrir en nueva pestaña
-            const tab = window.open(activity.url, `cdid_activity_${i}`);
-            
-            // Esperar un poco y cerrar
-            await new Promise(r => setTimeout(r, 1000));
-            
-            if (tab && !tab.closed) {
-                tab.close();
+
+        try {
+            let assignments;
+            try {
+                assignments = await readLocalStorage('assignments');
+            } catch (error) {
+                assignments = [];
             }
+
+            let updatedCount = 0;
+            for (let i = 0; i < activities.length; i++) {
+                const activity = activities[i];
+                button.textContent = `▶ Procesando ${i + 1}/${activities.length}`;
+
+                const itemID = parseAssignmentIdFromUrl(activity.url);
+                if (!itemID) {
+                    continue;
+                }
+
+                try {
+                    const submissionStatus = await getSubmissionStatusFromAssignmentPage(activity.url);
+                    assignments = mergeAssignment(assignments, itemID, submissionStatus);
+                    updatedCount += 1;
+                } catch (error) {
+                    console.error(`No se pudo revisar la actividad ${activity.url}:`, error);
+                }
+            }
+
+            await extensionApi.storage.local.set({ assignments });
+            button.textContent = `▶ Revisadas ${updatedCount}/${activities.length}`;
+            await new Promise((resolve) => setTimeout(resolve, 500));
+            window.location.reload();
+        } catch (error) {
+            console.error('Error al revisar actividades:', error);
+            alert('No se pudieron revisar las actividades. Revisa la consola para mas detalles.');
+            button.disabled = false;
+            button.style.opacity = '1';
+            button.textContent = '▶ Revisar Actividades';
         }
-        
-        // Recargar la página actual
-        button.textContent = `▶ Recargando...`;
-        await new Promise(r => setTimeout(r, 400));
-        window.location.reload();
     };
     
     buttonContainer.appendChild(button);
@@ -114,7 +148,7 @@ async function main() {
         assignments = await readLocalStorage('assignments');
     } catch (error) {
         assignments = [];
-        await chrome.storage.local.set({ assignments });
+        await extensionApi.storage.local.set({ assignments });
     }
 
     var AssignActivityItems = document.querySelectorAll('li.modtype_assign div.activity-item');
@@ -129,7 +163,10 @@ async function main() {
                 continue;
             }
             
-            const itemID = assignLink.href.split('id=')[1];
+            const itemID = parseAssignmentIdFromUrl(assignLink.href);
+            if (!itemID) {
+                continue;
+            }
 
             assignments.forEach(assignment => {
                 if ( assignment.id == itemID && assignment.status ) {
