@@ -14,12 +14,10 @@ const readLocalStorage = async (key) => {
 async function main() {
     console.log('Se ejecuta main');
 
-    chrome.storage.local.get(['assignments']).then((result) => { if ( !result.assignments ) {
-            chrome.storage.local.set({ 'assignments': [] }); }
-    });
-
-    chrome.storage.local.get(['otheractivities']).then((result) => { if ( !result.otheractivities ) {
-            chrome.storage.local.set({ 'otheractivities': [] }); }
+    chrome.storage.local.get(['assignments']).then((result) => {
+        if ( !result.assignments ) {
+            chrome.storage.local.set({ 'assignments': [] });
+        }
     });
     
     var submittedStatusElement = document.querySelector('td.submissionstatussubmitted');

@@ -14,12 +14,10 @@ const readLocalStorage = async (key) => {
 async function main() {
     console.log('Se ejecuta main');
 
-    chrome.storage.local.get(['assignments']).then((result) => { if ( !result.assignments ) {
-            chrome.storage.local.set({ 'assignments': [] }); }
-    });
-
-    chrome.storage.local.get(['otheractivities']).then((result) => { if ( !result.otheractivities ) {
-            chrome.storage.local.set({ 'otheractivities': [] }); }
+    chrome.storage.local.get(['assignments']).then((result) => {
+        if ( !result.assignments ) {
+            chrome.storage.local.set({ 'assignments': [] });
+        }
     });
     
     eventItems = document.querySelectorAll('div.event');
@@ -36,8 +34,8 @@ async function main() {
 
             assignments.forEach(assignment => {
                 if ( assignment.id == itemID && assignment.status ) {
-                    eventItem.querySelector('div.card-header').style.backgroundColor = '#cfefcf';
-                    eventItem.querySelector('div.card-header').style.borderColor = '#cfefcf';
+                    eventItem.querySelector('div.card-header').style.backgroundColor = 'rgb(0 255 0 / 36%)';
+                    eventItem.querySelector('div.card-header').style.border = '2px solid green';
                 }
             });
         }
